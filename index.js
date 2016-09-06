@@ -94,11 +94,11 @@ function createPlaceholder(content, placeholder, ext, blur, files){
   };
 }
 
-function createResponsiveImages(content, sizes, ext, files, emitFile){
+function createResponsiveImages(content, sizes, ext, files, emitFile, publicPath){
   return function(next){
     var count = 0;
     var images = [];
-    var imgset = files.map(function(file, i){ return file + ' ' + sizes[i] + ' '; }).join(',');
+    var imgset = files.map(function(file, i){ return publicPath + file + ' ' + sizes[i] + ' '; }).join(',');
     var source = sizeOf(content);
     var ratio = source.width/source.height;
 
@@ -175,6 +175,7 @@ module.exports = function(content) {
     var sizes = query.sizes.map(function(s){ return s; });
     var files = sizes.map(function(size, i){ return name + '-' + size + '.' + ext; });
     var emitFile = this.emitFile;
+    var publicPath = this.options && this.options.output && this.options.output.publicPath ? this.options.output.publicPath : '';
 
     var task1 = null,
       task2 = null;
@@ -187,9 +188,9 @@ module.exports = function(content) {
 
     if (sizes.length >= 1){
       if (!task1) {
-        task1 = createResponsiveImages(content, sizes, ext, files, emitFile);
+        task1 = createResponsiveImages(content, sizes, ext, files, emitFile, publicPath);
       } else {
-        task2 = createResponsiveImages(content, sizes, ext, files, emitFile);
+        task2 = createResponsiveImages(content, sizes, ext, files, emitFile, publicPath);
       }
     }
 
